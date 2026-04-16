@@ -16,6 +16,11 @@ for arg in "$@"; do
     esac
 done
 
+# Resolve the main repo root (works from inside worktrees too)
+repo_root=$(git rev-parse --show-toplevel)
+# If inside a worktree, get the root of the main working tree
+main_root=$(git -C "$repo_root" worktree list --porcelain | head -1 | sed 's/^worktree //')
+
 # Auto-detect worktree name from current directory
 if [[ -z "$NAME" ]]; then
     current_dir=$(pwd)
@@ -27,7 +32,7 @@ if [[ -z "$NAME" ]]; then
     fi
 fi
 
-worktree_dir=".worktrees/${NAME}"
+worktree_dir="${main_root}/.worktrees/${NAME}"
 
 if [[ ! -d "$worktree_dir" ]]; then
     echo "Error: worktree directory not found: $worktree_dir"
@@ -37,19 +42,19 @@ fi
 # Get branch name before removing
 branch=$(git -C "$worktree_dir" branch --show-current 2>/dev/null || echo "")
 
-echo "Removing worktree: $worktree_dir"
-git worktree remove "$worktree_dir" --force
+echo "Removing worktree: .worktrees/${NAME}"
+git -C "$main_root" worktree remove ".worktrees/${NAME}" --force
 
 if [[ -n "$branch" ]]; then
     echo "Deleting local branch: $branch"
-    git branch -D "$branch" 2>/dev/null || echo "Branch already deleted or not found"
+    git -C "$main_root" branch -D "$branch" 2>/dev/null || echo "Branch already deleted or not found"
 fi
 
 echo "Pruning..."
-git worktree prune
-git fetch --prune
+git -C "$main_root" worktree prune
+git -C "$main_root" fetch --prune
 
 echo ""
 echo "=== Cleanup complete ==="
-echo "  Worktree: $worktree_dir (removed)"
+echo "  Worktree: .worktrees/${NAME} (removed)"
 [[ -n "$branch" ]] && echo "  Branch:   $branch (deleted)"
