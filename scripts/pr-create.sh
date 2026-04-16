@@ -83,6 +83,18 @@ done
 
 body="${body}"$'\n'"Closes #${issue_number}"
 
+# Check for uncommitted changes
+if [[ -n "$(git status --porcelain)" ]]; then
+    echo "Error: working tree has uncommitted or unstaged changes"
+    echo ""
+    git status --short
+    exit 1
+fi
+
+# Push branch to origin
+echo "Pushing branch..."
+git push -u origin "$branch"
+
 # Create PR
 echo ""
 echo "Title: $pr_title"
