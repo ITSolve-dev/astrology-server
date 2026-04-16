@@ -17,7 +17,7 @@ if [[ "$branch" == "main" ]]; then
 fi
 
 # Extract issue number from branch name (e.g. .../1-server-configure-base-setup -> 1)
-issue_number=$(echo "$branch" | grep -oP '/\K\d+(?=-)' | head -1)
+issue_number=$(echo "$branch" | sed 's|.*/||' | sed 's/-.*//' | grep -o '[0-9]*')
 
 if [[ -z "$issue_number" ]]; then
     echo "Error: could not extract issue number from branch: $branch"
