@@ -103,7 +103,10 @@ echo "$body"
 echo ""
 echo "Creating PR..."
 
-pr_url=$(gh pr create --title "$pr_title" --body "$body" 2>&1)
+# Resolve GitHub username from git config
+assignee=$(gh api user --jq '.login' 2>/dev/null || echo "")
+
+pr_url=$(gh pr create --title "$pr_title" --body "$body" --draft ${assignee:+--assignee "$assignee"} 2>&1)
 
 echo ""
 echo "=== PR created ==="
