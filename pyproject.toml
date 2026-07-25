@@ -1,0 +1,51 @@
+[project]
+name = "astrology-server"
+version = "0.1.0"
+description = "Astrology REST API server"
+requires-python = ">=3.14,<3.15"
+dependencies = [
+    "fastapi[standard]~=0.136.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff",
+    "ty",
+    "prek",
+]
+test = [
+    "pytest~=9.0.0",
+    "pytest-asyncio",
+]
+
+[tool.uv]
+required-version = "~=0.11.0"
+
+[tool.ruff]
+cache-dir = ".tmp/ruff-cache"
+target-version = "py314"
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # pyflakes
+    "I",      # isort
+    "N",      # pep8-naming
+    "UP",     # pyupgrade
+    "B",      # flake8-bugbear
+    "A",      # flake8-builtins
+    "S",      # flake8-bandit
+    "T20",    # flake8-print
+    "SIM",    # flake8-simplify
+    "RUF",    # ruff-specific
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+cache_dir = ".tmp/pytest-cache"
+asyncio_mode = "auto"
